@@ -1,6 +1,10 @@
 package com.anatoliyadamitskiy.airball;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -8,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,8 +20,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity
@@ -36,6 +46,9 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DribbbleDownload download = new DribbbleDownload(this);
+        download.execute();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -115,6 +128,9 @@ public class MainActivity extends ActionBarActivity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        public static final String UPDATE_MAIN = "com.anatoliyadamitskiy.airball.UPDATE_MAIN";
+
+        ArrayList<Shot> shotsArrayList = new ArrayList<>();
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -144,6 +160,39 @@ public class MainActivity extends ActionBarActivity
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            IntentFilter intentFilter = new IntentFilter(UPDATE_MAIN);
+            getActivity().registerReceiver(downloadOkayReceiver, intentFilter);
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getActivity().unregisterReceiver(downloadOkayReceiver);
+        }
+
+        BroadcastReceiver downloadOkayReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                if (intent.getAction().equals(UPDATE_MAIN)) {
+
+                    ListView mainListView = (ListView) getView().findViewById(R.id.mainListView);
+                    shotsArrayList = FileStorage.getShots(getActivity(), "Main");
+                    MainAdapter mainAdapter = new MainAdapter(getActivity(), shotsArrayList);
+                    mainListView.setAdapter(mainAdapter);
+
+                }
+            }
+        };
     }
 
 }
