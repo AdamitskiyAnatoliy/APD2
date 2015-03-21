@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,16 +23,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-/**
- * Created by Anatoliy on 3/14/15.
- */
-public class CommentAdapter extends BaseAdapter {
+
+public class ProfileAdapter extends BaseAdapter {
 
     Context mContext;
-    ArrayList<Comment> mObjects;
+    ArrayList<Shot> mObjects;
     private static final int ID_CONSTANT = 0x1000000;
 
-    public CommentAdapter(Context c, ArrayList<Comment> objects) {
+    public ProfileAdapter(Context c, ArrayList<Shot> objects) {
         mContext = c;
         mObjects = objects;
     }
@@ -68,7 +64,7 @@ public class CommentAdapter extends BaseAdapter {
         ViewHolder holder;
 
         if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.comment_layout, parent, false);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.profile_card_layout, parent, false);
 
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
@@ -76,13 +72,21 @@ public class CommentAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        final Comment item = (Comment) getItem(position);
+        final Shot item = (Shot) getItem(position);
 
-        holder.nameTextView.setText(item.getName());
-        Spanned newComment = Html.fromHtml(item.getComment());
-        holder.commentTextView.setText(newComment);
-        holder.mainImageView.setRadius(75);
-        holder.mainImageView.setImageUrl(item.getAvatarUrl());
+        holder.titleTextView.setText(item.getShotTitle());
+        holder.authorTextView.setText("by " + item.getPlayerName());
+        holder.mainImageView.setImageUrl(item.getImageUrl());
+
+        holder.shareButtonMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mObjects.get(position).getImageUrl()));
+                mContext.startActivity(intent);
+
+            }
+        });
 
         return convertView;
     }
@@ -90,15 +94,20 @@ public class CommentAdapter extends BaseAdapter {
 
     static class ViewHolder {
 
-        public TextView nameTextView;
-        public TextView commentTextView;
-        public RoundedCornersSmartImageView mainImageView;
+        public TextView titleTextView;
+        public TextView authorTextView;
+        public Button shareButtonMain;
+        public SmartImageView mainImageView;
 
         public ViewHolder (View v) {
 
-            nameTextView = (TextView)v.findViewById(R.id.commentName);
-            commentTextView = (TextView)v.findViewById(R.id.comment);
-            mainImageView = (RoundedCornersSmartImageView)v.findViewById(R.id.commentAvatarImageView);
+            titleTextView = (TextView)v.findViewById(R.id.profileTitleTextView);
+            authorTextView = (TextView)v.findViewById(R.id.profileNameTextView);
+            mainImageView = (SmartImageView)v.findViewById(R.id.profileImageView);
+            shareButtonMain = (Button)v.findViewById(R.id.shareButtonProfile);
+
         }
+
     }
+
 }

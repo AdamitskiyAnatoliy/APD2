@@ -22,6 +22,9 @@
         <activity android:name=".MoreInfoActivity"
             android:parentActivityName=".MainActivity"
             android:label=" "/>
+        <activity android:name=".MyProfileActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="Profile" />
     </application>
 
 </manifest>

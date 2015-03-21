@@ -98,4 +98,46 @@ public class FileStorage {
             return false;
         }
     }
+
+    public static ArrayList<User> getUser(Context _context)
+    {
+        File external = _context.getExternalFilesDir(null);
+        File file = new File(external, "User");
+        ArrayList<User> userArray = new ArrayList<>();
+
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            userArray = (ArrayList<User>) objectInputStream.readObject();
+            fileInputStream.close();
+
+            return userArray;
+        }
+        catch (IOException | ClassNotFoundException e)
+        {
+            e.printStackTrace();
+            return userArray;
+        }
+    }
+
+    public static Boolean saveUser(Context _context, ArrayList<User> _userArray)
+    {
+        File external = _context.getExternalFilesDir(null);
+        File file = new File(external, "User");
+
+        try
+        {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(_userArray);
+            fileOutputStream.close();
+            return true;
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

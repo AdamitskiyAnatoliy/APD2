@@ -1,5 +1,11 @@
 package com.anatoliyadamitskiy.airball;
 
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -19,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,6 +35,8 @@ import android.widget.Toast;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+
+    public static final String UPDATE_MY_PROFILE = "com.anatoliyadamitskiy.airball.UPDATE_MY_PROFILE";
 
     /**
      * Remember the position of the selected item.
@@ -242,13 +251,68 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter(UPDATE_MY_PROFILE);
+        getActivity().registerReceiver(downloadOkayReceiver, intentFilter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(downloadOkayReceiver);
+    }
+
+    BroadcastReceiver downloadOkayReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction().equals(UPDATE_MY_PROFILE)) {
+
+                Intent intent1 = new Intent(context, MyProfileActivity.class);
+                startActivity(intent1);
+
+//                ListView commentListView = (ListView) findViewById(R.id.commentsListView);
+//                commentArrayList = FileStorage.getComments(getApplicationContext());
+//                CommentAdapter mainAdapter = new CommentAdapter(getApplicationContext(), commentArrayList);
+//                commentListView.setAdapter(mainAdapter);
+
+            }
+        }
+    };
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
         if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "My Profile.", Toast.LENGTH_SHORT).show();
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+
+            alert.setTitle("Dribbble Login");
+            alert.setMessage("Please Log in to your account.");
+
+            final EditText input = new EditText(getActivity());
+            alert.setView(input);
+
+            alert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String value = String.valueOf(input.getText());
+                    ProfileDownload profileDownload = new ProfileDownload(getActivity(), value);
+                    profileDownload.execute();
+                    // Do something with value!
+                }
+            });
+
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                }
+            });
+
+            alert.show();
+
             return true;
         }
 

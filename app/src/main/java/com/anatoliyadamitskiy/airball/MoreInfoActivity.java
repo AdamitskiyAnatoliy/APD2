@@ -5,14 +5,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -46,6 +49,20 @@ public class MoreInfoActivity extends ActionBarActivity {
 
         CommentDownload commentDownload = new CommentDownload(this, commentUrl);
         commentDownload.execute();
+
+        FloatingActionButton fabButton = new FloatingActionButton.Builder(this)
+                .withDrawable(getResources().getDrawable(R.drawable.ic_fav_more_info))
+                .withButtonColor(Color.rgb(33, 150, 243))
+                .withGravity(Gravity.BOTTOM | Gravity.RIGHT)
+                .withMargins(0, 0, 16, 300)
+                .create();
+
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Saved to Favorites", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -67,7 +84,7 @@ public class MoreInfoActivity extends ActionBarActivity {
 
             if (intent.getAction().equals(UPDATE_COMMENTS)) {
 
-                
+
                 ListView commentListView = (ListView) findViewById(R.id.commentsListView);
                 commentArrayList = FileStorage.getComments(getApplicationContext());
                 CommentAdapter mainAdapter = new CommentAdapter(getApplicationContext(), commentArrayList);
