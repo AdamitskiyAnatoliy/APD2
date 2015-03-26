@@ -95,6 +95,7 @@ public class MainAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "Saved to Favorites", Toast.LENGTH_LONG).show();
+                FileStorage.saveFavorites(mContext, "Favorites", item);
             }
         });
 

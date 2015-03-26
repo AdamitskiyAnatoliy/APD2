@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -140,4 +141,73 @@ public class FileStorage {
             return false;
         }
     }
+
+    public static ArrayList<Shot> getFavorites(Context _context, String _category)
+    {
+        File external = _context.getExternalFilesDir(null);
+        File file = new File(external, _category);
+        ArrayList<Shot> shotArray = new ArrayList<>();
+
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            shotArray = (ArrayList<Shot>) objectInputStream.readObject();
+            fileInputStream.close();
+
+            return shotArray;
+        }
+        catch (IOException | ClassNotFoundException e)
+        {
+            e.printStackTrace();
+            return shotArray;
+        }
+    }
+
+    public static Boolean saveFavorites(Context _context, String _category, Shot _shot)
+    {
+        File external = _context.getExternalFilesDir(null);
+        File file = new File(external, _category);
+
+        ArrayList<Shot> shotArray = new ArrayList<>();
+
+        try
+        {
+
+            FileInputStream fileInputStream = new FileInputStream(file);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+
+                shotArray = (ArrayList<Shot>) objectInputStream.readObject();
+                shotArray.add(_shot);
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                objectOutputStream.writeObject(shotArray);
+                fileOutputStream.close();
+            return true;
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            shotArray.add(_shot);
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(shotArray);
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+
+
+     }
+
 }

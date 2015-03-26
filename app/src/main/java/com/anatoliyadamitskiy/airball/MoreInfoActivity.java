@@ -61,6 +61,7 @@ public class MoreInfoActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "Saved to Favorites", Toast.LENGTH_LONG).show();
+                FileStorage.saveFavorites(getApplicationContext(), "Favorites", shot);
             }
         });
     }

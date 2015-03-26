@@ -47,8 +47,8 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DribbbleDownload download = new DribbbleDownload(this);
-        download.execute();
+//        DribbbleDownload download = new DribbbleDownload(this);
+//        download.execute();
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -73,12 +73,28 @@ public class MainActivity extends ActionBarActivity
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
+                DribbbleDownload2 download = new DribbbleDownload2(this, "Popular");
+                download.execute();
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
+                DribbbleDownload2 download2 = new DribbbleDownload2(this, "Debuts");
+                download2.execute();
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
+                DribbbleDownload2 download3 = new DribbbleDownload2(this, "Rebounds");
+                download3.execute();
+                break;
+            case 4:
+                mTitle = getString(R.string.title_section4);
+                DribbbleDownload2 download4 = new DribbbleDownload2(this, "Playoffs");
+                download4.execute();
+                break;
+            case 5:
+                mTitle = getString(R.string.title_section5);
+                DribbbleDownload2 download5 = new DribbbleDownload2(this, "Favorites");
+                download5.execute();
                 break;
         }
     }
@@ -129,6 +145,7 @@ public class MainActivity extends ActionBarActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         public static final String UPDATE_MAIN = "com.anatoliyadamitskiy.airball.UPDATE_MAIN";
+        public static final String UPDATE_FAV = "com.anatoliyadamitskiy.airball.UPDATE_FAV";
 
         ArrayList<Shot> shotsArrayList = new ArrayList<>();
 
@@ -171,6 +188,7 @@ public class MainActivity extends ActionBarActivity
             super.onResume();
             IntentFilter intentFilter = new IntentFilter(UPDATE_MAIN);
             getActivity().registerReceiver(downloadOkayReceiver, intentFilter);
+
         }
 
         @Override
@@ -185,8 +203,14 @@ public class MainActivity extends ActionBarActivity
 
                 if (intent.getAction().equals(UPDATE_MAIN)) {
 
+                    String cat = intent.getStringExtra("Category");
                     ListView mainListView = (ListView) getView().findViewById(R.id.mainListView);
-                    shotsArrayList = FileStorage.getShots(getActivity(), "Main");
+
+                    if (cat == "Favorites") {
+                        shotsArrayList = FileStorage.getFavorites(getActivity(), "Favorites");
+                    } else {
+                        shotsArrayList = FileStorage.getShots(getActivity(), cat);
+                    }
                     MainAdapter mainAdapter = new MainAdapter(getActivity(), shotsArrayList);
                     mainListView.setAdapter(mainAdapter);
 
@@ -194,5 +218,4 @@ public class MainActivity extends ActionBarActivity
             }
         };
     }
-
 }
